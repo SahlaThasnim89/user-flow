@@ -7,7 +7,11 @@ import generateToken from '../utils/generateToken.js'
 //@access Public
 const authUser=asyncHandler(async(req,res)=>{ 
     const {email,password}=req.body
+    console.log(email);
+    
     const user=await User.findOne({email})
+    console.log(user.name);
+    
     if(user&&(await user.matchPassword(password))){
         generateToken(res,user._id)
         res.status(201).json({

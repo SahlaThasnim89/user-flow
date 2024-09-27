@@ -10,12 +10,88 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link } from "react-router-dom"
+import { loginSchema } from "@/lib/types"
+import { ToggleRight } from "lucide-react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { Link, useNavigate } from "react-router-dom"
+import { TloginSchema } from "@/lib/types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import axios from 'axios'
+import { useDispatch } from "react-redux"
+import { login } from "@/features/userSlice"
+
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
 
  function Login() {
+
+  const {
+    register,
+    handleSubmit,
+    formState:{errors,isSubmitting},
+    setError
+  }=useForm<TloginSchema>({resolver:zodResolver(loginSchema)})
+
+  const navigate=useNavigate()
+  const dispatch=useDispatch();
+
+const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
+  try {
+    
+    const res=await axios.post('/api/login',data)
+    console.log(res.data);
+
+    if(res.data.errors){
+      const errors=res.data.errors;
+
+      if(errors.email){
+        setError('email',{
+          type:'server',
+          message:errors.email,
+        })
+      }else if(errors.password){
+          setError('password',{
+            type:'server',
+            message:errors.password,
+          })
+        }else{
+          toast.error('something went wrong');
+          
+        }
+      }else{
+        toast.success('successfully logged in')
+        navigate('/')
+        dispatch(login({
+          email:data.email,
+          password:data.password,
+          loggedIn:true,
+        }))
+      }
+    }
+    
+    
+   catch (error) {
+    setError("root", {
+      message: "This email is already taken",
+    });
+    toast("This email is already taken");
+  }
+}
+
+
+  const errHandler=(e:any)=>{
+    Object.values(e).reverse().forEach(e=>{
+      toast.error("sign up failed",{
+        description:e.message as string
+      })
+    })
+    
+  }
+
+
+
   return (
     <Card className="mx-auto max-w-sm my-10">
       <CardHeader>
@@ -25,6 +101,7 @@ export const description =
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <form onSubmit={handleSubmit(onSubmit,errHandler)}>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -33,16 +110,14 @@ export const description =
               type="email"
               placeholder="m@example.com"
               required
+              {...register('email')}
             />
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              {/* <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link> */}
             </div>
-            <Input id="password" type="password" placeholder="password" required />
+            <Input id="password" type="password" placeholder="password" required {...register('password')}/>
           </div>
           <Button type="submit" className="w-full">
             Login
@@ -54,8 +129,12 @@ export const description =
             Sign up
           </Link>
         </div>
+        </form>
       </CardContent>
     </Card>
   )
 }
 export default Login
+
+
+

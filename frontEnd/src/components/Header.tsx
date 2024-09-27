@@ -10,9 +10,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Link } from 'react-router-dom'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout, selectUser } from '@/features/userSlice'
+import axios from 'axios'
+import { toast } from 'sonner'
+
 
 const Header = () => {
+
+  const user=useSelector(selectUser)
+  console.log(user,'opopop');
+  
+
+  const navigate=useNavigate()
+  const dispatch=useDispatch();
+  
+  const handleLogOut=async(e)=>{    
+    const res=await axios.post('/api/logout')
+    if(res.data.errors){
+      toast.error('something went wrong'); 
+    }else{
+      dispatch(logout())
+      toast.success('successfully logged out')
+      navigate('/')
+    }
+
+  }
+
+  
   return (
     <div>
               <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -69,7 +102,7 @@ const Header = () => {
           <form className="ml-auto flex-1 sm:flex-initial">
     
           </form>
-          <DropdownMenu>
+          { user?  (  <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
                 <CircleUser className="h-5 w-5" />
@@ -80,9 +113,30 @@ const Header = () => {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={(e)=>handleLogOut(e)}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> ) :(
+                 
+            <Link to='/login'>
+            <TooltipProvider>
+            <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+                
+            </TooltipTrigger>
+        <TooltipContent>
+          <p>Login</p>
+        </TooltipContent>
+      </Tooltip>
+      </TooltipProvider>
+   
+              </Link>
+            
+         
+         )}
         </div>
       </header>
     </div>

@@ -6,13 +6,15 @@ import './index.css'
 import Home from './screens/Home.tsx'
 import Login from './screens/Login.tsx'
 import SignUp from './screens/SignUp.tsx'
+import { Provider } from 'react-redux';
+import {store} from '../src/redux/store.tsx'
 
 
 const router=createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App/>}>
         <Route index={true} path='/' element={<Home/>}/>
-        <Route index={true} path='/auth' element={<Login/>}/>
+        <Route index={true} path='/login' element={<Login/>}/>
         <Route index={true} path='/register' element={<SignUp/>}/>
     </Route>
   )
@@ -21,6 +23,8 @@ const router=createBrowserRouter(
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <Provider store={store}>
     <RouterProvider router={router}/>
+ </Provider>,
   </StrictMode>,
 )

@@ -13,7 +13,7 @@ router.post("/register", registerUser);
 router.post("/login", authUser);
 router.post("/logout", logoutUser);
 router
-  .route("/profile")
+  .route("/account")
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile);
 

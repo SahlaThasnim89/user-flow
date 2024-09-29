@@ -9,16 +9,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-// import { Upload } from "lucide-react";
-// import { Image } from "lucide-react";
 import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios';
 import { signUpSchema,TsignUpSchema} from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch } from "react-redux";
-import { login } from "@/features/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login, selectUser } from "@/features/userSlice";
+import Loader from "@/components/Loader";
+import { useRegisterMutation } from "@/features/usersApiSlice";
 
 
 
@@ -36,13 +36,6 @@ export const description =
   "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account";
 
 function SignUp() {
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { isSubmitting },
-  //   setError,
-  //   watch,
-  // } = useForm<formFields>();
   const {register,
     handleSubmit,
     formState:{errors,isSubmitting},
@@ -51,28 +44,25 @@ function SignUp() {
   }=useForm<TsignUpSchema>({
     resolver:zodResolver(signUpSchema),
   })
-  
 
-  // const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setImagePreview(reader.result as string);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const user=useSelector(selectUser)
+
+  const [registerApiCall,{isLoading}]=useRegisterMutation();
+
 
   const navigate=useNavigate()
   const dispatch=useDispatch();
 
+  useEffect(()=>{
+    if(user){
+      navigate('/')
+    }
+  },[navigate,user])
+
   const onSubmit: SubmitHandler<TsignUpSchema> = async (data) => {
     try {
       const res=await axios.post('/api/register',data)
-      console.log(res.data);
     
       if(res.data.errors){
         const errors=res.data.errors;
@@ -103,13 +93,14 @@ function SignUp() {
         toast.error("something went wrong!")
       }
       }else{
+        // await registerApiCall({name,email,password}).unwrap()
         toast.success('registration successful')
-        navigate('/')
         dispatch(login({
-          name:data.name,
-          email:data.email,
-          
+          name:res.data.name,
+          email:res.data.email,
+          loggedIn:true,
         }))
+        // navigate('/')
         //  throw new Error();
         //  console.log(data);
       }
@@ -134,53 +125,6 @@ function SignUp() {
 
   return (
     <Card className="mx-auto max-w-md w-[28rem] my-16">
-      {/* <CardTitle className="text-xl font-bold px-96 pt-5">Sign Up</CardTitle> */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> */}
-          {/* <div className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="pt-3">User Image</CardTitle>
-              <CardDescription>Add the image of user</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-2">
-                <label htmlFor="imgUpload">
-                  {imagePreview ? (
-                    <img
-                      className="aspect-square  rounded-md object-cover h-[300px] w-[300px]"
-                      src={imagePreview}
-                      alt=""
-                    />
-                  ) : (
-                    <Image
-                      className="aspect-square w-full rounded-md object-cover"
-                      height="300"
-                      width="300"
-                    />
-                  )}
-                </label>
-                <div className="grid grid-cols-1 gap-2 w-full">
-                  <button className="flex w-full h-12 items-center justify-center rounded-md border border-dashed">
-                    <Upload
-                      type="file"
-                      className="h-4 w-4 text-muted-foreground"
-                    />
-                    <span className="sr-only">Upload</span>
-                    <input
-                      accept="image/*"
-                      {...register("image",{
-                        onChange:handleImageChange
-                      })}
-                      type="file"
-                      hidden
-                      id="imgUpload"
-                    />
-                  </button>
-                </div>
-              </div>
-            </CardContent>
-          </div> */}
-
-          {/* <div> */}
             <CardHeader>
             <CardTitle className="text-xl">Sign Up</CardTitle>
 
@@ -223,17 +167,18 @@ function SignUp() {
                   <Label htmlFor="confirm-password">Confirm Password</Label>
                   <Input
                     id="confirm-password"
-                    type="confirm-password"
+                    type="password"
                     placeholder="Confirm password"
                     {...register('confirmPassword')}
                   />
                 </div>
+                {isLoading&&<Loader/>}
                 <Button
                   disabled={isSubmitting}
                   type="submit"
                   className="w-full"
                 >
-                  {isSubmitting ? "Loading..." : "Create an account"}
+                  Create an account
                 </Button>
                 {/* {errors.root&&(<div className="text-red-500">{errors.root.message}</div>)} */}
                 {/* {errors.root&&(toast(errors.root.message))} */}

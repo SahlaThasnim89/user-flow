@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { CircleUser, Menu, Package2, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,27 +22,58 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout, selectUser } from '@/features/userSlice'
 import axios from 'axios'
 import { toast } from 'sonner'
+// import { useLogoutMutation } from '@/features/usersApiSlice'
+
 
 
 const Header = () => {
 
   const user=useSelector(selectUser)
-  console.log(user,'opopop');
   
+
+ 
 
   const navigate=useNavigate()
   const dispatch=useDispatch();
-  
-  const handleLogOut=async(e)=>{    
-    const res=await axios.post('/api/logout')
-    if(res.data.errors){
-      toast.error('something went wrong'); 
-    }else{
-      dispatch(logout())
-      toast.success('successfully logged out')
+
+  useEffect(()=>{
+    if(!user){
       navigate('/')
     }
+  },[user,navigate])
 
+  // const [logoutApiCall]=useLogoutMutation()
+  
+  const handleLogOut=async(e)=>{  
+    try {
+      const res=await axios.post('/api/logout')
+      
+      if(res.data.errors){
+        toast.error('something went wrong'); 
+      }else{
+        // await logoutApiCall().unwrap();
+        dispatch(logout())
+        toast.success('successfully logged out')
+      }
+    } catch (error) {
+      console.log(error.message);
+      
+    }  
+  }
+
+  const getProfile=async(e)=>{  
+    try {
+      const res=await axios.get('/api/account') 
+      if(res.data.errors){
+        toast.error('something went wrong'); 
+      }else{
+        navigate('/account')
+        toast.success('entered to profile')
+      }
+    } catch (error) {
+      console.log(error.message);
+      
+    }  
   }
 
   
@@ -99,10 +130,12 @@ const Header = () => {
 
         
         <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+
           <form className="ml-auto flex-1 sm:flex-initial">
     
           </form>
-          { user?  (  <DropdownMenu>
+          { user?  (
+              <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
                 <CircleUser className="h-5 w-5" />
@@ -110,12 +143,15 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              {/* <Link to='/account'> */}
+              <DropdownMenuItem onClick={(e)=>getProfile(e)}>My Account</DropdownMenuItem>
+              {/* </Link> */}
               <DropdownMenuSeparator />
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e)=>handleLogOut(e)}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu> ) :(
+          </DropdownMenu> 
+          ) :(
                  
             <Link to='/login'>
             <TooltipProvider>

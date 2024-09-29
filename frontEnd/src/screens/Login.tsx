@@ -11,15 +11,18 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { loginSchema } from "@/lib/types"
-import { ToggleRight } from "lucide-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { TloginSchema } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import axios from 'axios'
-import { useDispatch } from "react-redux"
-import { login } from "@/features/userSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { login, selectUser } from "@/features/userSlice"
+import { useEffect } from "react"
+import { useLoginMutation } from "@/features/usersApiSlice"
+import Loader from "@/components/Loader"
+
 
 
 export const description =
@@ -37,15 +40,23 @@ export const description =
   const navigate=useNavigate()
   const dispatch=useDispatch();
 
+  const [loginApiCall,{isLoading}]=useLoginMutation();
+  
+  const user=useSelector(selectUser)
+
+  useEffect(()=>{
+    if(user){
+      navigate('/')
+    }
+  },[navigate,user])
+
 const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
   try {
-    
     const res=await axios.post('/api/login',data)
-    console.log(res.data);
 
     if(res.data.errors){
       const errors=res.data.errors;
-
+    
       if(errors.email){
         setError('email',{
           type:'server',
@@ -61,15 +72,16 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
           
         }
       }else{
-        toast.success('successfully logged in')
-        navigate('/')
+        // await loginApiCall({email:res.data.email,password:res.data.password}).unwrap()
+        toast.success('successfully logged in')        
         dispatch(login({
-          email:data.email,
-          password:data.password,
+          name:res.data.name,
+          email:res.data.email,
           loggedIn:true,
-        }))
+        }))        
       }
     }
+   
     
     
    catch (error) {
@@ -119,6 +131,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
             </div>
             <Input id="password" type="password" placeholder="password" required {...register('password')}/>
           </div>
+          {isLoading&&<Loader/>}
           <Button type="submit" className="w-full">
             Login
           </Button>

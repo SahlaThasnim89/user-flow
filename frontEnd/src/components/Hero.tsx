@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
     Card,
     CardDescription,
@@ -8,13 +8,21 @@ import {
   } from "@/components/ui/card"
 import { useSelector } from 'react-redux'
 import { selectUser } from '@/features/userSlice'
+import { useNavigate } from 'react-router-dom'
 
  
 
 const Hero = () => {
 
   const user=useSelector(selectUser)
-  console.log(user);
+  const navigate=useNavigate()
+ 
+
+  useEffect(()=>{
+    if(user){
+      navigate('/')
+    }
+  },[navigate,user])
   
 
   return (

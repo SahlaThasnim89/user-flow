@@ -36,18 +36,17 @@ const Header = () => {
   const navigate=useNavigate()
   const dispatch=useDispatch();
 
-  useEffect(()=>{
-    if(!user){
-      navigate('/')
-    }
-  },[user,navigate])
+  // useEffect(()=>{
+  //   if(user){
+  //     navigate('/')
+  //   }
+  // },[user,navigate])
 
   // const [logoutApiCall]=useLogoutMutation()
   
   const handleLogOut=async(e)=>{  
     try {
       const res=await axios.post('/api/logout')
-      
       if(res.data.errors){
         toast.error('something went wrong'); 
       }else{
@@ -64,11 +63,12 @@ const Header = () => {
   const getProfile=async(e)=>{  
     try {
       const res=await axios.get('/api/account') 
+      console.log('oioi');
+      
       if(res.data.errors){
         toast.error('something went wrong'); 
       }else{
         navigate('/account')
-        toast.success('entered to profile')
       }
     } catch (error) {
       console.log(error.message);
@@ -79,7 +79,7 @@ const Header = () => {
   
   return (
     <div>
-              <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+        <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
             
           <Package2
@@ -134,11 +134,25 @@ const Header = () => {
           <form className="ml-auto flex-1 sm:flex-initial">
     
           </form>
-          { user?  (
+          { user?
+            (
+              <div className='flex flex-row'>
+             
+             
               <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
-                <CircleUser className="h-5 w-5" />
+                {user.image?(
+                  
+                  <img src={user.image} className='h-8 w-8 rounded-full object-cover'/>
+                ):(
+                  <div className="rounded-full flex items-center justify-center">
+                  <span>
+                    {user.name.split(' ').map(word => word.charAt(0).toUpperCase()).join('')}
+                  </span>
+                </div>
+                )}
+                {/* <CircleUser className="h-5 w-5" /> */}
                 <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -151,6 +165,7 @@ const Header = () => {
               <DropdownMenuItem onClick={(e)=>handleLogOut(e)}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu> 
+          </div>
           ) :(
                  
             <Link to='/login'>

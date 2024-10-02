@@ -27,9 +27,10 @@ import { CircleUser, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useUpdateUserMutation } from '@/features/usersApiSlice';
+import { useParams } from 'react-router-dom';
 
 
-const editUser = () => {
+const EditByAdmin = () => {
   const {register,
     handleSubmit,
     formState:{errors,isSubmitting},
@@ -41,6 +42,7 @@ const editUser = () => {
 
   const user=useSelector(selectUser)
   const [updateProfile,{isLoading}]=useUpdateUserMutation()
+  const { id } = useParams();
 
   const navigate=useNavigate()
   const dispatch=useDispatch()
@@ -59,7 +61,7 @@ const editUser = () => {
 
 const getUser = async () => {
   try {
-      const res = await axios.get('/api/account');
+      const res = await axios.get(`/api/admin/editUser/${id}`);
       const userProfile = res.data;
       setCurrentUser(userProfile);
   } catch (error) {
@@ -117,10 +119,9 @@ const profileData={
   image:imageUrl||user.image,
 }
  
- console.log(profileData,'profileData');
  
   
-  const res=await axios.put('/api/account',profileData)
+  const res=await axios.put(`/api/admin/editUser/${id}`,profileData)
     console.log("Profile update response:", res.data);
     
   if(res.data.errors){
@@ -161,7 +162,7 @@ const profileData={
       loggedIn:true,
     }))
     toast.success('profile updated successfully')
-    navigate('/account')
+    navigate("/admin/userList")
     //  throw new Error();
     //  console.log(data);
   }
@@ -274,4 +275,4 @@ const profileData={
   )
 }
 
-export default editUser
+export default EditByAdmin;

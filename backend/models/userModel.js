@@ -17,7 +17,10 @@ const userSchema=mongoose.Schema({
     },
     image:{
         type:String
-    }
+    },
+    // stamp: {  
+    //     type: String
+    // }
 },{
     timestamps:true
 }

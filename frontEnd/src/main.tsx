@@ -12,6 +12,11 @@ import {store} from '../src/redux/store.tsx'
 import EditUser from './screens/editUser.tsx'
 import { ThemeProvider } from "@/components/theme-provider"
 import PrivateRoutes from './components/PrivateRoutes.tsx'
+import AdminLogin from './screens/AdminLogin.tsx'
+import AdminHome from './screens/AdminHome.tsx'
+import UserList from './screens/UserList.tsx'
+import CreateByAdmin from './screens/createByAdmin.tsx'
+import EditByAdmin from './screens/editByAdmin.tsx'
 
 
 
@@ -22,10 +27,21 @@ const router=createBrowserRouter(
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<SignUp/>}/>
 
+        <Route path='/admin/login' element={<AdminLogin/>}/>
+
+        
+
+
         {/* privteRoutes */}
         <Route path='' element={<PrivateRoutes/>}>
         <Route path='/account' element={<MyAccount/>}/>
         <Route path='/editProfile' element={<EditUser/>}/>
+
+        <Route path='/admin/home' element={<AdminHome/>}/>
+        <Route path='/admin/userList' element={<UserList/>}/>
+        <Route path='/admin/createUser' element={<CreateByAdmin/>}/>
+        <Route path='/admin/editUser/:id' element={<EditByAdmin/>}/>
+
         </Route>
 
     </Route>

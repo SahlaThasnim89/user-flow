@@ -28,7 +28,7 @@ import Loader from "@/components/Loader"
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
 
- function Login() {
+ function AdminLogin() {
 
   const {
     register,
@@ -46,16 +46,17 @@ export const description =
 
   useEffect(()=>{
     if(user){
-      navigate('/')
+      navigate('/admin/home')
     }
   },[navigate,user])
 
 const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
   try {
-    const res=await axios.post('/api/login',data)
-    console.log(res.data);
+    console.log('jjkjhh');
     
-
+    const res=await axios.post('/api/admin/login',data)
+    console.log(res.data,'jhjggjjgj');
+    
     if(res.data.errors){
       const errors=res.data.errors;
     
@@ -79,7 +80,6 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
         dispatch(login({
           name:res.data.name,
           email:res.data.email,
-          image:res.data.image,
           loggedIn:true,
         }))        
       }
@@ -91,7 +91,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
     setError("root", {
       message: "This email is already taken",
     });
-    toast("No user found");
+    toast("This email is already taken");
   }
 }
 
@@ -108,7 +108,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
 
 
   return (
-    <Card className="mx-auto max-w-sm mt-28">
+    <Card className="mx-auto max-w-sm my-10">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
@@ -124,6 +124,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
               id="email"
               type="email"
               placeholder="m@example.com"
+              defaultValue='sahlathasnim2002@gmail.com'
               required
               {...register('email')}
             />
@@ -132,25 +133,19 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
             </div>
-            <Input id="password" type="password" placeholder="password" required {...register('password')}/>
+            <Input id="password" type="password" defaultValue='AdminSahla' placeholder="password" required {...register('password')}/>
           </div>
           {isLoading&&<Loader/>}
           <Button type="submit" className="w-full">
             Login
           </Button>
         </div>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link to='/register' className="underline">
-            Sign up
-          </Link>
-        </div>
         </form>
       </CardContent>
     </Card>
   )
 }
-export default Login
+export default AdminLogin;
 
 
 

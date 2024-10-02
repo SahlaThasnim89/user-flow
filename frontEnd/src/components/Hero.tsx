@@ -31,11 +31,11 @@ const Hero = () => {
               <Card
                 className="sm:col-span-2" x-chunk="dashboard-05-chunk-0"
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="mb-3">
                   {user?
-                  <CardTitle className='pb-4'>WELCOME <span className='text-red-500'>{user.name}!</span></CardTitle>
+                  <CardTitle className='mb-4'>WELCOME <span className='text-red-500'>{user.name}!</span></CardTitle>
                   :
-                  <CardTitle className='pb-4'>MERN Authentication</CardTitle>
+                  <CardTitle className='mb-4'>MERN Authentication</CardTitle>
                 }
 
                   <CardDescription className="max-w-lg text-balance leading-relaxed">

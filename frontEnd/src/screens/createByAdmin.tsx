@@ -35,7 +35,7 @@ import { useRegisterMutation } from "@/features/usersApiSlice";
 export const description =
   "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account";
 
-function SignUp() {
+function CreateByAdmin() {
   const {register,
     handleSubmit,
     formState:{errors,isSubmitting},
@@ -89,14 +89,14 @@ function SignUp() {
       }
       }else{
         // await registerApiCall({name,email,password}).unwrap()
-        toast.success('registration successful')
+        toast.success('user created successfully')
         dispatch(login({
           name:res.data.name,
           email:res.data.email,
           image:res.data.image,
           loggedIn:true,
         }))
-        navigate('/')
+        navigate('/admin/userList')
         //  throw new Error();
         //  console.log(data);
       }
@@ -122,7 +122,7 @@ function SignUp() {
   return (
     <Card className="mx-auto max-w-md w-[28rem] my-16">
             <CardHeader>
-            <CardTitle className="text-xl">Sign Up</CardTitle>
+            <CardTitle className="text-xl">Create User</CardTitle>
 
               <CardDescription>
                 Enter your information to create an account
@@ -180,12 +180,12 @@ function SignUp() {
                 {/* {errors.root&&(<div className="text-red-500">{errors.root.message}</div>)} */}
                 {/* {errors.root&&(toast(errors.root.message))} */}
               </div>
-              <div className="mt-4 text-center text-sm">
+              {/* <div className="mt-4 text-center text-sm">
                 Already have an account?{" "}
                 <Link to="/login" className="underline">
                   Sign in
                 </Link>
-              </div>
+              </div> */}
       </form>
             </CardContent>
           {/* </div> */}
@@ -193,4 +193,4 @@ function SignUp() {
      </Card>
   );
 }
-export default SignUp;
+export default CreateByAdmin;

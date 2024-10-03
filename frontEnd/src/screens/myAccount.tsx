@@ -31,14 +31,9 @@ const MyAccount = () => {
     try {
         const res = await axios.get('/api/account');
         const userProfile = res.data;
-        console.log(userProfile); // This will log the retrieved user profile
-
-        // Set the user profile in state
         setCurrentUser(userProfile);
-        // toast.success('Entered to profile');
     } catch (error) {
-        console.log(error.message);
-        toast.error('Error fetching user data');
+        console.log('Error fetching user data',error);
     }
 };
 
@@ -63,7 +58,7 @@ const MyAccount = () => {
         <CardContent>
           <div className='flex justify-center mb-4'>
             {currentUser?.image ? (
-              <img className="h-28 w-20 rounded-full" src={currentUser.image} alt="User" />
+              <img className="h-28 w-28 rounded-full" src={currentUser.image} alt="User" />
             ) : (
               <CircleUser className="h-20 w-20" />
             )}

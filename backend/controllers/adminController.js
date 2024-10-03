@@ -10,7 +10,7 @@ import { toast } from 'react-toastify'
 const authAdmin=asyncHandler(async(req,res)=>{ 
     
     const credentials={
-        email:'sahlathasnim2002@gmail.com',
+        email:'AdminSahla@gmail.com',
         password:'AdminSahla'
     }
 
@@ -149,10 +149,12 @@ const updateUserProfile=asyncHandler(async(req,res)=>{
 })
 
 
-const deleteUser=asyncHandler(async(req,res)=>{
+const blockUser=asyncHandler(async(req,res)=>{
     const id=req.params.id
-    const user=await User.findByIdAndDelete({ _id: id }) 
-    if(user){
+    const user = await User.findById(id);
+        if(user){
+            user.isBlocked=req.body.isBlocked;;
+            await user.save()
         res.status(200).json(user)    
     }else{
         res.status(404)
@@ -170,5 +172,5 @@ export {
     updateUserProfile,
     registerUser,
     getSingleUser,
-    deleteUser
+    blockUser
 }

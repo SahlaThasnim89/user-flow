@@ -7,7 +7,7 @@ import {
   updateUserProfile,
   registerUser,
   getSingleUser,
-  deleteUser
+  blockUser
 } from "../controllers/adminController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import upload from '../middleware/multer.js';
@@ -19,5 +19,5 @@ router.get('/usersList',protect,getUsers)
   .route("/editUser/:id")
   .get(protect, getSingleUser)
   .put(protect,upload.single('image'), updateUserProfile);
-router.delete('/deleteUser/:id',protect,deleteUser)
+router.patch('/deleteUser/:id',protect,blockUser)
 export default router;

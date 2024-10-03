@@ -7,22 +7,19 @@ import generateToken from '../utils/generateToken.js'
 //@access Public
 const authUser=asyncHandler(async(req,res)=>{ 
     const {email,password}=req.body
-    const user=await User.findOne({email})
-
-    
-    
+    const user=await User.findOne({email:email})
     if(user&&(await user.matchPassword(password))){
         generateToken(res,user._id)
         res.status(201).json({
             _id:user._id,
             name:user.name,
-            email:user.email
+            email:user.email,
+            isBlocked:user.isBlocked,
         })
     }else{
-        res.status(400);
+        res.status(400).json('Invalid email or password');
         throw new Error('Invalid email or password')
     }
-
 })
 
 //@desc Register a new user
@@ -30,27 +27,29 @@ const authUser=asyncHandler(async(req,res)=>{
 //@access Public
 const registerUser=asyncHandler(async(req,res)=>{ 
     const {name,email,password}=req.body
+    console.log(name,email,password); 
     const userExists=await User.findOne({email})
     if(userExists){
-        res.status(400)
+        res.status(400).json({message:'User already exists'})
         throw new Error('User already exists')
     }
     const user=await User.create({
         name,
         email,
-        password
+        password,
     })
+    
     
     if(user){
         generateToken(res,user._id)
         res.status(201).json({
             _id:user._id,
             name:user.name,
-            email:user.email
+            email:user.email,
         })
         
     }else{
-        res.status(400);
+        res.status(400).json('Invalid user data');
         throw new Error('Invalid user data')
     }
      
@@ -80,19 +79,8 @@ try {
 //@access Private
 
 
-// const getUserProfile=asyncHandler(async(req,res)=>{ 
-//     const user={
-//         _id:req.user._id,
-//         name:req.user.name,
-//         email:req.user.email,
-//     }
-    
-    
-//     res.status(200).json(user)
-// })
-
 const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).select('name email image stamp createdAt');
+    const user = await User.findById(req.user._id).select('name email image isBlocked createdAt');
 
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -103,9 +91,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         image: user.image,
-        createdTime: user.createdAt,  // Using createdAt from timestamps
-        stamp: user.stamp,
+        createdTime: user.createdAt,
+        isBlocked:user.isBlocked,
     };
+    
 
     res.status(200).json(userProfile);
 });

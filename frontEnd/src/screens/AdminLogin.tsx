@@ -51,11 +51,8 @@ export const description =
   },[navigate,user])
 
 const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
-  try {
-    console.log('jjkjhh');
-    
+  try {    
     const res=await axios.post('/api/admin/login',data)
-    console.log(res.data,'jhjggjjgj');
     
     if(res.data.errors){
       const errors=res.data.errors;
@@ -124,7 +121,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
               id="email"
               type="email"
               placeholder="m@example.com"
-              defaultValue='sahlathasnim2002@gmail.com'
+              defaultValue='AdminSahla@gmail.com'
               required
               {...register('email')}
             />

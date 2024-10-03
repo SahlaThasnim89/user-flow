@@ -31,13 +31,10 @@ const AdminHome = () => {
   const getUser = async () => {
     try {
         const res = await axios.get('/api/admin/home');
-        const userProfile = res.data;
-        console.log(userProfile); 
-        
+        const userProfile = res.data; 
         setCurrentUser(userProfile);
     } catch (error) {
-        console.log(error.message);
-        toast.error('Error fetching user data');
+        console.log('Error fetching user data',error);
     }
 };
 

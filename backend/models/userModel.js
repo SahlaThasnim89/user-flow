@@ -18,9 +18,10 @@ const userSchema=mongoose.Schema({
     image:{
         type:String
     },
-    // stamp: {  
-    //     type: String
-    // }
+    isBlocked:{
+        type:Boolean,
+        default:false,
+    }
 },{
     timestamps:true
 }

@@ -18,11 +18,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import axios from 'axios'
 import { useDispatch, useSelector } from "react-redux"
-import { login, selectUser } from "@/features/userSlice"
+import { login, logout, selectUser } from "@/features/userSlice"
 import { useEffect } from "react"
 import { useLoginMutation } from "@/features/usersApiSlice"
 import Loader from "@/components/Loader"
-
+logout
 
 
 export const description =
@@ -50,10 +50,15 @@ export const description =
     }
   },[navigate,user])
 
+
 const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
   try {
     const res=await axios.post('/api/login',data)
-    console.log(res.data);
+    if(res.data.isBlocked){
+      dispatch(logout());
+      toast.error('your account has been blocked')
+      return;
+    }
     
 
     if(res.data.errors){
@@ -80,6 +85,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
           name:res.data.name,
           email:res.data.email,
           image:res.data.image,
+          isBlocked:res.data.isBlocked,
           loggedIn:true,
         }))        
       }

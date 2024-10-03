@@ -8,6 +8,12 @@ import connectDB from './config/db.js';
 connectDB();
 import cookieParser from 'cookie-parser';
 import adminRoutes from './routes/adminRoutes.js'
+// import redis from 'redis'
+
+// const client=redis.createClient();
+// client.on('error',(err)=>{
+//     console.error('Redis error: ',err)
+// })
 
 const app=express();
 

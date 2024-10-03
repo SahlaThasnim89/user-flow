@@ -59,6 +59,8 @@ function SignUp() {
     try {
       const res=await axios.post('/api/register',data)
     
+      console.log(res.data);
+      
       if(res.data.errors){
         const errors=res.data.errors;
 

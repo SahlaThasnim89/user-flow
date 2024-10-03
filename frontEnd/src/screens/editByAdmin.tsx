@@ -65,8 +65,7 @@ const getUser = async () => {
       const userProfile = res.data;
       setCurrentUser(userProfile);
   } catch (error) {
-      console.log(error.message);
-      toast.error('Error fetching user data');
+      console.log('Error fetching user data',error);
   }
 };
 
@@ -91,6 +90,15 @@ const handleImageChange=(event:React.ChangeEvent<HTMLInputElement>)=>{
 
 const onSubmit: SubmitHandler<TProfileSchema> = async (data) => {
 try {
+
+  const isNameChanged = data.name && data.name.trim() !== "" && data.name !== currentUser?.name;
+  const isPasswordChanged = data.password && data.password.trim() !== "";
+  const isImageChanged = imageFile !== null;
+  
+  if (!isNameChanged && !isPasswordChanged && !isImageChanged) {
+    toast.error("No changes were made!");
+    return; 
+  }
 
   let imageUrl=null
   

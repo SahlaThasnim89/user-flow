@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  PlusCircle,
-  Search,
-  UserRoundPen,
-  UserRoundX,
-} from "lucide-react";
+import { PlusCircle, Search, UserRoundPen, UserRoundX, UserRoundCheck} from "lucide-react";
 import { UserRound } from "lucide-react";
 import {
   Breadcrumb,
@@ -58,11 +53,10 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-
-
 const UserList = () => {
   const [users, setUsers] = useState(null);
-  const [searchQuery,setSearchQuery]=useState('')
+  const [blocked,setBlocked]=useState(new Set())
+  const [searchQuery, setSearchQuery] = useState("");
   const user = useSelector(selectUser);
   const navigate = useNavigate();
 
@@ -71,8 +65,6 @@ const UserList = () => {
       getUsers();
     }
   }, [user]);
-
-
 
   const getUsers = async (e) => {
     try {
@@ -87,8 +79,6 @@ const UserList = () => {
     }
   };
 
-
-
   const getCreatePage = async (e) => {
     try {
       navigate("/admin/createUser");
@@ -96,8 +86,6 @@ const UserList = () => {
       console.log(error.message);
     }
   };
-
-
 
   const getEditPage = async (e, id) => {
     try {
@@ -107,53 +95,53 @@ const UserList = () => {
     }
   };
 
-
-
-  const DeleteUser = async (e, id) => {
+  const BlockUser = async (e, id,isBlocked) => {
     try {
-      const res = await axios.delete(`/api/admin/deleteUser/${id}`);
-      console.log(res.data, "deteled");
-      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
-      toast("user deleted successflly");
-    } catch (error) {
+      const res = await axios.patch(`/api/admin/deleteUser/${id}`,{
+        isBlocked:!isBlocked,
+      });
+
+      const updatedUser = res.data;
+      setUsers((prevUsers) => 
+        prevUsers.map((user) => 
+          user._id === updatedUser._id ? updatedUser : user
+        )
+      );
+
+      setBlocked((prev)=>{
+        const updated=new Set(prev)
+        if(isBlocked){
+          updated.delete(id)
+      }else{
+        updated.add(id)
+      }
+      return updated
+    })
+
+    const action = isBlocked ? "User unblocked successfully" : "User blocked successfully";
+    toast(action);    
+  }catch (error) {
       console.error("Error deleting user :", error);
-      toast("delete failed");
+      toast("action failed");
     }
   };
 
 
-  const FilterUser=users.filter((user)=>{
-    const creationTime=new Date(user.createdAt).toLocaleString("en-US",{
+  const FilterUser = users?.filter((user) => {
+    const creationTime = new Date(user.createdAt).toLocaleString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    })
+    });
     return (
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())||user.email.toLowerCase().includes(searchQuery.toLowerCase())||creationTime.includes(searchQuery)
-    )
-  })
-
-    // // Filter users based on the search query
-    // const filteredUsers = users?.filter((user) => {
-    //   const userCreatedAt = new Date(user.createdAt).toLocaleString("en-US", {
-    //     year: "numeric",
-    //     month: "2-digit",
-    //     day: "2-digit",
-    //     hour: "2-digit",
-    //     minute: "2-digit",
-    //     hour12: true,
-    //   });
-  
-    //   return (
-    //     user?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     user?.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     userCreatedAt?.includes(searchQuery)
-    //   );
-    // });
-  
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      creationTime.includes(searchQuery)
+    );
+  });
 
   return (
     <div>
@@ -185,7 +173,7 @@ const UserList = () => {
                 type="search"
                 placeholder="Search..."
                 className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                onChange={(e) => setSearchQuery(e.target.value)} 
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </header>
@@ -196,8 +184,6 @@ const UserList = () => {
                   <TabsTrigger value="all">All</TabsTrigger>
                 </TabsList>
                 <div className="ml-auto flex items-center gap-2">
-   
-
                   <Button
                     size="sm"
                     className="h-8 gap-1"
@@ -235,13 +221,13 @@ const UserList = () => {
                             Edit
                           </TableHead>
                           <TableHead className="hidden md:table-cell">
-                            Delete
+                            Block
                           </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                      {FilterUser.length > 0 ? (
-                          FilterUser.map((user) => (
+                        {FilterUser?.length > 0 ? (
+                          FilterUser?.map((user) => (
                             <TableRow key={user._id}>
                               <TableCell className="hidden sm:table-cell">
                                 {user.image ? (
@@ -316,7 +302,12 @@ const UserList = () => {
                                             size="icon"
                                             className="rounded-full"
                                           >
-                                            <UserRoundX className="h-5 w-5" />
+                                            {user.isBlocked ? (
+                                              <UserRoundCheck className="h-5 w-5" />
+                                            ) : (
+                                              <UserRoundX className="h-5 w-5" />
+                                            )}
+
                                           </Button>
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
@@ -325,8 +316,7 @@ const UserList = () => {
                                               Are you sure?
                                             </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                              This action cannot be undone. This
-                                              will permanently delete the user.
+                                            Please confirm: this action will affect their access. Do you want to proceed?
                                             </AlertDialogDescription>
                                           </AlertDialogHeader>
                                           <AlertDialogFooter>
@@ -335,7 +325,7 @@ const UserList = () => {
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                               onClick={(e) =>
-                                                DeleteUser(e, user._id)
+                                                BlockUser(e, user._id,user.isBlocked)
                                               }
                                             >
                                               Continue
@@ -345,7 +335,7 @@ const UserList = () => {
                                       </AlertDialog>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Delete user</p>
+                                    <p>{user.isBlocked ? "Unblock user" : "Block user"}</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>

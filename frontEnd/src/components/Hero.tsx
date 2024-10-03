@@ -6,16 +6,18 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
-import { useSelector } from 'react-redux'
-import { selectUser } from '@/features/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout, selectUser } from '@/features/userSlice'
 import { useNavigate } from 'react-router-dom'
-
+import axios from 'axios'
+import { toast } from 'sonner'
  
 
 const Hero = () => {
 
   const user=useSelector(selectUser)
   const navigate=useNavigate()
+  const dispatch=useDispatch()
  
 
   useEffect(()=>{
@@ -23,6 +25,30 @@ const Hero = () => {
       navigate('/')
     }
   },[navigate,user])
+
+  
+  useEffect(()=>{
+    const check=async()=>{
+      if(user){
+        try {
+          const res=await axios.get('/api/account')
+          const user=res.data;
+          console.log(user);
+          
+          if(res.data.isBlocked){
+            dispatch(logout())
+            toast.error('your account has been blocked')
+            navigate('/')
+          }
+        } catch (error) {
+          console.error('error in blocking',error);
+          
+        }
+      }
+    }
+    const time=setInterval(check,5000)
+    return()=>clearInterval(time)
+  },[user,dispatch,navigate])
   
 
   return (

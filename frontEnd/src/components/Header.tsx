@@ -85,7 +85,7 @@ const Header = () => {
           >
             <Package2 className="h-6 w-6" />
             <span className="sr-only">Acme Inc</span>
-            <h1>MERN AUTH</h1>
+            <h1>USER FLOW</h1>
           </Package2>
         </nav>
         <Sheet>
@@ -105,14 +105,14 @@ const Header = () => {
                 href="#"
                 className="flex items-center gap-2 text-lg font-semibold md:text-base"
               >
-                <Package2 className="h-6 w-6" />
+                <Package2 className="h-6 w-6 font-extrabold" />
                 <span className="sr-only">Acme Inc</span>
-                <h1>MERN AUTH</h1>
+                <h1 className="font-extrabold">USER FLOW</h1>
               </Package2>
-              <h1>MERN AUTH</h1>
+              <h1 className="font-extrabold">USER FLOW</h1>
             </nav>
           </SheetContent>
-          <h1>MERN AUTH</h1>
+          <h1 className="font-extrabold">USER FLOW</h1>
         </Sheet>
 
         <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">

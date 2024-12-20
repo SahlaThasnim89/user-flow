@@ -33,7 +33,7 @@ export const description =
   const {
     register,
     handleSubmit,
-    formState:{errors,isSubmitting},
+    // formState:{errors,isSubmitting},
     setError
   }=useForm<TloginSchema>({resolver:zodResolver(loginSchema)})
 
@@ -103,7 +103,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
 
 
   const errHandler=(e:any)=>{
-    Object.values(e).reverse().forEach(e=>{
+    Object.values(e).reverse().forEach((e:any)=>{
       toast.error("sign up failed",{
         description:e.message as string
       })
@@ -146,7 +146,7 @@ const onSubmit:SubmitHandler<TloginSchema>=async(data)=>{
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
+          Don't have an account?{" "}
           <Link to='/register' className="underline">
             Sign up
           </Link>

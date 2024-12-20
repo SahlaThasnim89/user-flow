@@ -27,7 +27,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: `${USERS_URL}/updateProfile`,
         method: "PUT",
-        body: data,
+        // body: data,
       }),
     }),
   }),

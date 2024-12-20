@@ -6,9 +6,10 @@ import {createSlice} from '@reduxjs/toolkit'
 // }
 
 const initialState={
-    user:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):null,
+    user:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')as string):null,
     loading:false,
-    error:null
+    error:null,
+    value:0
 }
 
 export const userSlice=createSlice({
@@ -22,7 +23,7 @@ export const userSlice=createSlice({
         logout:(state)=>{
            state.user=null 
            localStorage.removeItem('user')
-        }
+        },
     }
 })
 

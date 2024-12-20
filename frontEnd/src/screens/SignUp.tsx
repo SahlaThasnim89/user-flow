@@ -47,11 +47,18 @@ function SignUp() {
 
 
   const user=useSelector(selectUser)
+  const navigate=useNavigate()
+
+  useEffect(()=>{
+    if(user){
+      navigate('/')
+    }
+  },[navigate,user])
 
   const [registerApiCall,{isLoading}]=useRegisterMutation();
 
 
-  const navigate=useNavigate()
+
   const dispatch=useDispatch();
 
 

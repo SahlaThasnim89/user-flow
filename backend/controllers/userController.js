@@ -27,8 +27,10 @@ const authUser=asyncHandler(async(req,res)=>{
 //@access Public
 const registerUser=asyncHandler(async(req,res)=>{ 
     const {name,email,password}=req.body
+    console.log(name,email,password); 
     const userExists=await User.findOne({email})
     if(userExists){
+        console.log('user already have')
         res.status(400).json({message:'User already exists'})
         
     }
@@ -37,6 +39,7 @@ const registerUser=asyncHandler(async(req,res)=>{
         email,
         password,
     })
+    console.log(user,'user')
     
     
     if(user){
@@ -49,6 +52,7 @@ const registerUser=asyncHandler(async(req,res)=>{
         
     }else{
         res.status(400).json('Invalid user data');
+
     }
      
 })

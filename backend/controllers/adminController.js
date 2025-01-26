@@ -122,10 +122,13 @@ const getSingleUser=asyncHandler(async(req,res)=>{
 const updateUserProfile=asyncHandler(async(req,res)=>{
     const id=req.params.id
     const user=await User.findOne({ _id: id }) 
-
-    
+    console.log(user)
+    console.log(req.body,'body')
     if(user){
-        user.name=req.body.name||user.name;
+        // user.name=req.body.name||user.name;
+        if(req.body.name){
+            user.name=req.body.name
+        }
         user.email=req.body.email||user.email;
         if(req.body.password){
             user.password=req.body.password;
@@ -135,6 +138,7 @@ const updateUserProfile=asyncHandler(async(req,res)=>{
             user.image=image
         }
         const updatedUser=await user.save()
+        console.log(updatedUser,'updated')
         res.status(200).json({
             _id:updatedUser._id,
             name:updatedUser.name,
